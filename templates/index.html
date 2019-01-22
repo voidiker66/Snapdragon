@@ -4,34 +4,24 @@
 Home
 {% endblock %}
 
-{% block body %}
+{% block contentheader %}
+<div id="radial"></div>
 
 <div id="header" class="my-12 w-full justify-center text-center">
-	<img src="{{ company_logo }}" class=""></img>
-	<label class="text-black text-center text-5xl w-full">{{ company_name }}</label>
+	<img src="{{ company.logo }}" class=""></img>
+	<label class="text-black text-center text-5xl w-full">{{ company.name }}</label>
 </div>
 
-<div class="block flex-none mb-4 mx-w-md text-center">
-	<label class="text-center text-3xl">Featured Items</label>
-</div>
-<div id="featured_items" class="flex justify-center mb-12">
+<div id="featured_items" class="flex justify-center mb-12 w-5/6 mx-auto">
 	{% for item in featured %}
-		<div class="max-w-sm rounded overflow-hidden shadow-lg mx-6">
-		  <img class="w-full" src="https://tailwindcss.com/img/card-top.jpg" alt="Sunset in the mountains">
-		  <div class="px-6 py-4">
-		    <div class="font-bold text-xl mb-2">{{ item.name }}</div>
-		    <p class="text-grey-darker text-base">
-		      {{ item.description }}
-		    </p>
-		  </div>
-		  <div class="px-6 py-4">
-		    <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">#photography</span>
-		    <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">#travel</span>
-		    <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker">#winter</span>
-		  </div>
+		<div class="overflow-hidden border border-black border-4">
+		  <img class="w-full slide-height" src="{{ item.src }}" alt="Sunset in the mountains">
 		</div>
 	{% endfor %}
 </div>
+{% endblock %}
+
+{% block body %}
 
 <div class="block flex-none mb-4 mx-w-md text-center">
 	<label class="text-center text-3xl">Sale Items</label>

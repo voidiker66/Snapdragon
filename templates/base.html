@@ -4,29 +4,35 @@
     {% block head %}
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='jquery-3.3.1.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.jquery.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.4.2/chosen.min.css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='footer.min.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet">
 
-    <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
-    <script type="text/javascript" src="js/jquery-ui-1.8.18.custom.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery-3.3.1.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery.cycle.all.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery.easing.1.3.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery.fitvids.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery.touchwipe.min.js') }}"></script>
 
-    <script src="{{ url_for('static', filename='datepicker/bootstrap-datepicker.min.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='slick-1.8.1/slick/slick.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='slick-1.8.1/slick/slick-theme.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='slick-1.8.1/slick/slick.js') }}"></script>
 
-    <link id="bsdp-css" href="{{ url_for('static', filename='datepicker/bootstrap-datepicker.min.css') }}" rel="stylesheet">
-    <link id="bsdp-css" href="{{ url_for('static', filename='datepicker/bootstrap-datepicker3.min.css') }}" rel="stylesheet">
-    <link id="bsdp-css" href="{{ url_for('static', filename='datepicker/bootstrap-theme.min.css') }}" rel="stylesheet">
-    <link id="bsdp-css" href="{{ url_for('static', filename='datepicker/bootstrap-datepicker.standalone.min.css') }}" rel="stylesheet">
+    <script type="text/javascript" src="{{ url_for('static', filename='custom.js') }}"></script>
 
     <title>{% block title %}{% endblock %} - {{ company.name }}</title>
     {% endblock %}
   </head>
-  <body class="bg-grey-lighter">
-    {% include "navbar.html" %}
+  <body class="bg-grey-lighter h-screen flex flex-col">
+    <div id="content" class="bg-grey-darker max-w-2xl justify-center mx-auto shadow-md wood-gradient container">
+      <div class="contentheader wood-gradient">
+        {% include "navbar.html" %}
+        {% block contentheader %}
+
+        {% endblock %}
+        <div class="bg-yellow-dark h-6"></div>
+      </div>
     
 {% with messages = get_flashed_messages(with_categories=true) %}
   <!-- Categories: success (green), info (blue), warning (orange), danger (red) -->
@@ -42,7 +48,9 @@
   {% endif %}
 {% endwith %}
 
-    {% block body %}{% endblock %}
-    {% include "footer.html" %}
+    <div class="bg-grey-darkest pt-4 container-bg">
+      {% block body %}{% endblock %}
+      {% include "footer.html" %}
+    </div>
 </body>
 </html>

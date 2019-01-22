@@ -174,10 +174,15 @@ class ContactForm(Form):
 
 @app.route('/')
 def home():
+	images = [
+	'https://thumbs-prod.si-cdn.com/rjR9dBkPzbx3tV22Yhi-aA4aCRw=/800x600/filters:no_upscale()/https://public-media.si-cdn.com/filer/a3/3f/a33f8ee0-bfee-4cce-9a13-f9388c5323c0/42-55375529.jpg',
+	'https://thenypost.files.wordpress.com/2018/08/180823-florida-super-pythons-feature.jpg?quality=90&strip=all&w=618&h=410&crop=1',
+	'http://static.havahart.com/media/articles/images/721/snakes-in-yard.jpg'
+	]
 	data = []
 	sales = []
 	for x in range(3):
-		i = {'name': "this item " + str(x), 'description': 'wow what a description'}
+		i = {'src': images[x]}
 		s = {'name': "this item " + str(x), 'description': 'wow what a description'}
 		data.append(i)
 		sales.append(s)
