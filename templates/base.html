@@ -22,7 +22,7 @@
     <link id="bsdp-css" href="{{ url_for('static', filename='datepicker/bootstrap-theme.min.css') }}" rel="stylesheet">
     <link id="bsdp-css" href="{{ url_for('static', filename='datepicker/bootstrap-datepicker.standalone.min.css') }}" rel="stylesheet">
 
-    <title>{% block title %}{% endblock %} - Financial Advisor</title>
+    <title>{% block title %}{% endblock %} - {{ company.name }}</title>
     {% endblock %}
   </head>
   <body class="bg-grey-lighter">

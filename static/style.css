@@ -1,50 +1,12 @@
-/*body {
-	text-align: center;
-}*/
-
-.dash-pic {
-	width: 100%;
-	height: 100%;
+.disable-resize {
+	resize: none;
 }
 
-.dash-item {
-	width: 100px;
-	height: 100px;
-	padding: 5px;
+.gradient {
+	background-image: linear-gradient(to bottom, #463988, #3c88a1);
+	color: white;
 }
 
-.t-row-header {
-	width: 10px;
-	height: 10px;
-	padding: 5px;
-	font-weight: bold;
-	border-bottom: solid #000000 2px;
-}
-
-.left-tab {
-	margin-left: 20px;
-}
-
-td {
-	border-bottom: solid #000000 2px;
-}
-
-.evo-form {
-	display: inline-block;
-	text-align: left;
-	padding: 10px;
-	border: solid #000000 2px;
-	left: 10px;
-}
-
-.form-parent {
-	text-align: center;
-}
-
-.main-container {
-	min-height: 100vh; /* will cover the 100% of viewport */
-	overflow: hidden;
-	display: block;
-	position: relative;
-	padding-bottom: 100px; /* height of your footer */
+.base-color {
+	background-color: #463988;
 }

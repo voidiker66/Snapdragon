@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_wtf import Form
 from wtforms import TextField, BooleanField, validators, PasswordField, SubmitField, SelectField, FileField, \
-	SelectMultipleField, BooleanField, DateTimeField
+	SelectMultipleField, BooleanField, DateTimeField, TextAreaField
 from werkzeug.security import generate_password_hash, \
 	 check_password_hash
 import datetime
@@ -15,29 +15,38 @@ from werkzeug.utils import secure_filename
 import os
 import uuid
 
+from flask_mail import Mail, Message
+
+import smtplib
+import string
+
 from decimal import *
 
-"""
-date for income and expenses = YYYYMMDD so we can accurately compare time
-
-"""
-
-
 app = Flask(__name__)
-# pusher = Pusher(app, url_prefix='/play')
-# for now, we will do manual webhooks
 
-DATABASE_PATH = 'sqlite:///database/FinancialAdvisor.db'
+DATABASE_PATH = 'sqlite:///database/Snapdragon.db'
 
 UPLOAD_FOLDER = '/static/images'
 # only allow images to be uploaded
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+	return '.' in filename and \
+		   filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 app = Flask(__name__)
+
+# app.config.update(dict(
+# 	DEBUG = True,
+# 	MAIL_SERVER = 'smtp.gmail.com',
+# 	MAIL_PORT = 587,
+# 	MAIL_USE_TLS = True,
+# 	MAIL_USE_SSL = False,
+# 	MAIL_USERNAME = 'asikerd@gmail.com',
+# 	MAIL_PASSWORD = 'CheesePuppy',
+# ))
+
 db = SQLAlchemy(app)
+# mail = Mail(app)
 
 app.config.update(dict(
 	SECRET_KEY="powerful secretkey",
@@ -50,6 +59,28 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 e = create_engine(DATABASE_PATH)
 
 login_manager = LoginManager()
+
+COMPANY = {
+	'name': 'Snapdragon',
+	'motto': 'Coming in clutch'
+}
+
+
+def smtp_gmail(sender_email, subject, message):
+	username = "asikerd@gmail.com"
+	password = "CheesePuppy"
+	smtp_server = "smtp.gmail.com:587"
+	email_from = sender_email
+	email_to = "asikerd@gmail.com"
+	email_body = "From: " + email_from + '\r\n' + "To: " + email_to + '\r\n' + \
+	"Subject: " + subject + '\r\n' + message
+	
+	server = smtplib.SMTP(smtp_server)
+	server.starttls()
+	server.login(username, password)
+	server.sendmail(email_from, email_to, email_body)
+	server.quit()
+
 
 
 @login_manager.user_loader
@@ -78,55 +109,6 @@ class User(db.Model, UserMixin):
 	def check_password(self, password):
 		return check_password_hash(self.password, password)
 		#return password == self.password
-
-
-class budget(db.Model):
-	__tablename__ = 'budget'
-	id = db.Column(db.Integer, primary_key=True)
-	user = db.Column(db.Integer, db.ForeignKey("user.id"))
-	savings = db.Column(db.Numeric)
-	balance = db.Column(db.Numeric)
-
-	userR = db.relationship('User', foreign_keys=[user])
-
-	def __init__(self, user, savings, balance):
-		self.user = user
-		self.savings = savings
-		self.balance = balance
-
-
-class income(db.Model):
-	__tablename__ = 'income'
-	id = db.Column(db.Integer, primary_key=True)
-	user = db.Column(db.Integer, db.ForeignKey("user.id"))
-	date = db.Column(db.Integer)
-	amount = db.Column(db.Numeric)
-
-	userR = db.relationship('User', foreign_keys=[user])
-
-	def __init__(self, user, date, amount):
-		self.user = user
-		self.date = date
-		self.amount = amount
-
-
-class expenses(db.Model):
-	__tablename__ = 'expenses'
-	id = db.Column(db.Integer, primary_key=True)
-	user = db.Column(db.Integer, db.ForeignKey("user.id"))
-	date = db.Column(db.Integer)
-	amount = db.Column(db.Numeric)
-	description = db.Column(db.String(32))
-
-	userR = db.relationship('User', foreign_keys=[user])
-
-	def __init__(self, user, date, amount, description):
-		self.user = user
-		self.date = date
-		self.amount = amount
-		self.description = description
-
-
 
 class LoginForm(Form):
 	username = TextField('Username', [validators.Required()])
@@ -178,38 +160,41 @@ class RegisterForm(Form):
 			return True
 		return False
 
-class IncomeForm(Form):
-	date = TextField('Date', validators=[validators.Required()], id="datepicker")
-	amount = TextField('Amount', validators=[validators.Required()])
-	submit = SubmitField('Submit')
+class ContactForm(Form):
+	email = TextField('Email', [validators.Required()])
+	subject = TextField('Subject', [validators.Required()])
+	message = TextAreaField('Message', [validators.Required()])
+	submit = SubmitField('Log In')
 
 	def __init__(self, *args, **kwargs):
 		Form.__init__(self, *args, **kwargs)
 
 	def validate(self):
-		if self.date.data and self.amount.data:
-			return True
-		return False
-
-class ExpensesForm(Form):
-	date = TextField('Date', validators=[validators.Required()], id="datepicker")
-	amount = TextField('Amount', validators=[validators.Required()])
-	description = TextField('Description', validators=[validators.Required()])
-	submit = SubmitField('Submit')
-
-	def __init__(self, *args, **kwargs):
-		Form.__init__(self, *args, **kwargs)
-
-	def validate(self):
-		if self.date.data and self.amount.data and self.description.data:
-			return True
-		return False
+		return self.email.length and self.subject.length and self.message.length
 
 @app.route('/')
 def home():
-	return render_template('index.html')
+	data = []
+	sales = []
+	for x in range(3):
+		i = {'name': "this item " + str(x), 'description': 'wow what a description'}
+		s = {'name': "this item " + str(x), 'description': 'wow what a description'}
+		data.append(i)
+		sales.append(s)
+	return render_template('index.html', featured=data, sales=sales, company=COMPANY)
 
 @app.route('/login', methods=['GET', 'POST'])
+def admin_login():
+	form = LoginForm()
+	if form.validate_on_submit():
+		if form.validate():
+			flash("You're now logged in!", category='green')
+			return redirect('/dashboard')
+		else:
+			flash("No user with that email/password combo", category='red')
+	return render_template('login.html', form=form, company=COMPANY)
+
+@app.route('/admin', methods=['GET', 'POST'])
 def login():
 	form = LoginForm()
 	if form.validate_on_submit():
@@ -218,14 +203,13 @@ def login():
 			return redirect('/dashboard')
 		else:
 			flash("No user with that email/password combo", category='red')
-	return render_template('login.html', form=form)
+	return render_template('login.html', form=form, company=COMPANY)
 
 @app.route("/logout")
 @login_required
 def logout():
 	logout_user()
 	return redirect('/')
-
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -239,87 +223,30 @@ def signup():
 			return redirect('/login')
 		else:
 			flash("Error: Check your inputs", category='red')
-	return render_template('register.html', form=form)
+	return render_template('register.html', form=form, company=COMPANY)
 
-
-@app.route('/dashboard')
-@login_required
-def dashboard():
-	user_id = current_user.get_id()
-	budget_obj = budget.query.filter_by(user=user_id).first()
-	income_list = list(income.query.filter_by(user=user_id).all())
-
-	now = datetime.datetime.now()
-	beginning_month = int(now.year * 1e4 + now.month * 1e2 + 1)
-
-	expenses_list = list(expenses.query.filter_by(user=user_id).filter(expenses.date >= beginning_month).all())
-	last_three = list(expenses.query.filter_by(user=user_id).order_by(expenses.date.desc()).limit(3).all())
-
-	avg_income = 0
-	for i in income_list:
-		avg_income += i.amount
-
-	avg_expenses = 0
-	for i in expenses_list:
-		avg_expenses += i.amount
-
-	# i get paid twice a month, therefore, the average per month is twice the average per paycheck
-	avg_income /= len(income_list)
-	avg_income *= 2
-
-	return render_template('dashboard.html', budget=budget_obj, income=income_list, avg_income=avg_income, \
-		expenses=expenses_list, avg_expenses=avg_expenses, last_three=last_three)
-
-@app.route('/income', methods=['GET', 'POST'])
-@login_required
-def incomePage():
-	form = IncomeForm()
+@app.route('/contact')
+def contact():
+	form = ContactForm()
 	if form.validate_on_submit():
 		if form.validate():
-			date_list = form.date.data.split('/')
-			date_int = int(date_list[2] + date_list[0] + date_list[1])
-			
-			i = income(current_user.get_id(), date_int, float(form.amount.data))
-			db.session.add(i)
-			db.session.commit()
-
-			b = budget.query.filter_by(user=current_user.get_id()).first()
-			b.balance += Decimal(form.amount.data)
-			db.session.commit()
-
-			flash("New income added!", category='green')
-			return redirect('/dashboard')
+			smtp_gmail(form.email, form.subject, form.message)
+			return redirect('/contact')
 		else:
-			flash("Incorrect information.", category='red')
-	return render_template('income.html', form=form)
+			flash("Error", category='red')
+	return render_template('contact.html', form=form, company=COMPANY)
 
+@app.route('/about')
+def about():
+	return render_template('about.html', company=COMPANY)
 
-@app.route('/expense', methods=['GET', 'POST'])
-@login_required
-def expensePage():
-	form = ExpensesForm()
-	if form.validate_on_submit():
-		if form.validate():
-			date_list = form.date.data.split('/')
-			date_int = int(date_list[2] + date_list[0] + date_list[1])
-			
-			e = expenses(current_user.get_id(), date_int, float(form.amount.data), form.description.data)
-			db.session.add(e)
-			db.session.commit()
-
-			b = budget.query.filter_by(user=current_user.get_id()).first()
-			b.balance -= Decimal(form.amount.data)
-			db.session.commit()
-
-			flash("New expense added!", category='green')
-			return redirect('/dashboard')
-		else:
-			flash("Incorrect information.", category='red')
-	return render_template('expense.html', form=form)
+@app.route('/storefront')
+def storefront():
+	return render_template('storefront.html', company=COMPANY)
 
 @app.errorhandler(404)
 def page_not_found(e):
-	return render_template('404.html')
+	return render_template('404.html', company=COMPANY)
 
 
 login_manager.init_app(app)
