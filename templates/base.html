@@ -24,14 +24,14 @@
     <title>{% block title %}{% endblock %} - {{ company.name }}</title>
     {% endblock %}
   </head>
-  <body class="bg-grey-lighter h-screen flex flex-col">
+  <body class="h-screen flex flex-col">
     <div id="content" class="bg-grey-darker max-w-2xl justify-center mx-auto shadow-md wood-gradient container">
       <div class="contentheader wood-gradient">
         {% include "navbar.html" %}
         {% block contentheader %}
 
         {% endblock %}
-        <div class="bg-yellow-dark h-6"></div>
+        <div class="off-color h-6 border border-black"></div>
       </div>
     
 {% with messages = get_flashed_messages(with_categories=true) %}

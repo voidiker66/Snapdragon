@@ -164,7 +164,7 @@ class ContactForm(Form):
 	email = TextField('Email', [validators.Required()])
 	subject = TextField('Subject', [validators.Required()])
 	message = TextAreaField('Message', [validators.Required()])
-	submit = SubmitField('Log In')
+	submit = SubmitField('Send')
 
 	def __init__(self, *args, **kwargs):
 		Form.__init__(self, *args, **kwargs)
@@ -210,6 +210,11 @@ def login():
 			flash("No user with that email/password combo", category='red')
 	return render_template('login.html', form=form, company=COMPANY)
 
+@app.route('/dashboard')
+@login_required
+def dashboard():
+	return render_template('dashboard.html', company=COMPANY)
+
 @app.route("/logout")
 @login_required
 def logout():
@@ -247,7 +252,16 @@ def about():
 
 @app.route('/storefront')
 def storefront():
-	return render_template('storefront.html', company=COMPANY)
+	images = [
+	'https://thumbs-prod.si-cdn.com/rjR9dBkPzbx3tV22Yhi-aA4aCRw=/800x600/filters:no_upscale()/https://public-media.si-cdn.com/filer/a3/3f/a33f8ee0-bfee-4cce-9a13-f9388c5323c0/42-55375529.jpg',
+	'https://thenypost.files.wordpress.com/2018/08/180823-florida-super-pythons-feature.jpg?quality=90&strip=all&w=618&h=410&crop=1',
+	'http://static.havahart.com/media/articles/images/721/snakes-in-yard.jpg'
+	]
+	sales = []
+	for x in range(3):
+		s = {'src': images[x], 'title': "this item " + str(x), 'description': 'wow what a description'}
+		sales.append(s)
+	return render_template('storefront.html', saleitems=sales, company=COMPANY)
 
 @app.errorhandler(404)
 def page_not_found(e):
